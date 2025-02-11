@@ -34,21 +34,31 @@ def accuracy(net, test_loader): # Return the percentage of accurate predictions 
 
 class Net(torch.nn.Module):
 
-    def __init__(self):
+    def __init__(self, inner_layers=None): # number of neurons in inner hidden layers passed in as list of ints
         super(Net, self).__init__()
-        self.fc1 = torch.nn.Linear(28*28, 120)  # 28x28 from image dimension
-        self.fc2 = torch.nn.Linear(120, 84)
-        self.fc3 = torch.nn.Linear(84, 10)
+
+        self.layers = torch.nn.Sequential()
+        
+        if (inner_layers == None) or len(inner_layers) == 0:
+            self.layers.append(torch.nn.Linear(28*28, 10))
+        else:
+            self.layers.append(torch.nn.Linear(28*28, inner_layers[0])) # First layer is 28x28 -> l[0]
+            
+            for l in range(len(inner_layers)-1): # Specify all inner layers
+                self.layers.append(torch.nn.Linear(inner_layers[l], inner_layers[l+1]))
+
+            self.layers.append(torch.nn.Linear(inner_layers[-1], 10)) # Last layer is l[-1] -> 10 outputs
 
     def forward(self, input):
         # Flatten: output (N, 784)
-        l1 = torch.flatten(input, 1)
-        # Fully connected: (N, 784) input to (N, 120) output with RELU
-        l2 = F.relu(self.fc1(l1))
-        # Fully connected: (N, 120) input to (N, 84) output with RELU
-        l3 = F.relu(self.fc2(l2))
-        # Gaussian layer: (N, 84) input to (N, 10) output
-        return self.fc3(l3)
+        out = torch.flatten(input, 1)
+        
+        # First through second to last fully connected layers with RELU
+        for l in range(len(self.layers)-1):
+            out = F.relu(self.layers[l](out))
+
+        # Final layer is Gaussian to (N, 10) output
+        return self.layers[-1](out)
 
 
 # Set seed for reproducibility
@@ -75,7 +85,7 @@ test_loader = torch.utils.data.DataLoader(dataset=test_data, batch_size=batch_si
 
 
 # Create network, optimizer, and loss function
-net = Net()
+net = Net(inner_layers=[120,84])
 net.to(device)
 optimizer = torch.optim.SGD(net.parameters(), lr=0.01)
 criterion = torch.nn.MSELoss()
