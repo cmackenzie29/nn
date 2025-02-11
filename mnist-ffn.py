@@ -1,6 +1,4 @@
 import torch
-import torch.nn as nn
-import torch.optim as optim
 import torchvision.transforms as transforms
 import torchvision.datasets as dsets
 import torch.nn.functional as F
@@ -34,13 +32,13 @@ def accuracy(net, test_loader): # Return the percentage of accurate predictions 
     return 100*correct/total
 
 
-class Net(nn.Module):
+class Net(torch.nn.Module):
 
     def __init__(self):
         super(Net, self).__init__()
-        self.fc1 = nn.Linear(28*28, 120)  # 28x28 from image dimension
-        self.fc2 = nn.Linear(120, 84)
-        self.fc3 = nn.Linear(84, 10)
+        self.fc1 = torch.nn.Linear(28*28, 120)  # 28x28 from image dimension
+        self.fc2 = torch.nn.Linear(120, 84)
+        self.fc3 = torch.nn.Linear(84, 10)
 
     def forward(self, input):
         # Flatten: output (N, 784)
@@ -79,8 +77,8 @@ test_loader = torch.utils.data.DataLoader(dataset=test_data, batch_size=batch_si
 # Create network, optimizer, and loss function
 net = Net()
 net.to(device)
-optimizer = optim.SGD(net.parameters(), lr=0.01)
-criterion = nn.MSELoss()
+optimizer = torch.optim.SGD(net.parameters(), lr=0.01)
+criterion = torch.nn.MSELoss()
 
 
 # Train the model
