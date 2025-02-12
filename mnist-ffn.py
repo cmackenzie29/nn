@@ -35,7 +35,7 @@ def accuracy(net, test_loader): # Return the percentage of accurate predictions 
 class Net(torch.nn.Module):
 
     def __init__(self, inner_layers=None): # number of neurons in inner hidden layers passed in as list of ints
-        super(Net, self).__init__()
+        super().__init__()
 
         self.layers = torch.nn.Sequential()
         
@@ -77,7 +77,7 @@ else:
 # Load dataset
 train_data = dsets.MNIST(root='./data', train=True, transform=transforms.ToTensor(), download=True)
 test_data = dsets.MNIST(root='./data', train=False, transform=transforms.ToTensor())
-batch_size = 100
+batch_size = 60
 n_epochs = 10
 n_iters = round(n_epochs * len(train_data) / batch_size)
 train_loader = torch.utils.data.DataLoader(dataset=train_data, batch_size=batch_size, shuffle=True)
@@ -85,7 +85,7 @@ test_loader = torch.utils.data.DataLoader(dataset=test_data, batch_size=batch_si
 
 
 # Create network, optimizer, and loss function
-net = Net(inner_layers=[120,84])
+net = Net(inner_layers=[120, 84])
 net.to(device)
 optimizer = torch.optim.SGD(net.parameters(), lr=0.01)
 criterion = torch.nn.MSELoss()
@@ -101,7 +101,7 @@ for it in range(n_iters):
     out = net(data.to(device))
 
     # Calculate the loss and backpropagate
-    loss = criterion(out, F.one_hot(targets).float().to(device)) # Convert digits to one-hot encoding (2 -> [0,0,1,0,0,0,0,0,0,0])
+    loss = criterion(out, F.one_hot(targets, 10).float().to(device)) # Convert digits to one-hot encoding (2 -> [0,0,1,0,0,0,0,0,0,0])
     loss.backward() # Calculate gradients
     optimizer.step() # New parameters
 
