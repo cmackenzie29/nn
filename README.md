@@ -2,6 +2,7 @@
 - [ ] Pass in predetermined weights to the network
 - [x] Generalize Net class so that architecture can be passed in as parameters
 - [ ] Create class to iteratively build up model architecture. Should use pre-defined subset of training set to validate/compare each iteration.
+- [ ] Note: if linear approximation to gelu does not give good results, the next degree is $x^2/sqrt{2\pi} + x/2$ to try.
 
 ### Modifying number of neurons in a layer
 The network $\textrm{L1} \rightarrow \textrm{L2} \rightarrow \textrm{L3}$ consists of weights $A$ and biases $a$ connecting $\textrm{L1}$ to $\textrm{L2}$, and weights $B$ and biases $b$ connecting $\textrm{L2}$ to $\textrm{L3}$. Changing the size of $\textrm{L2}$ requires these parameters to be redefined as $A^\*$, $a^\*$, $B^\*$, and $b^\*$. It is not possible to find an exact match for all inputs $x$, but when using an activation function that is asymptotically linear around small values of $x$, such as GELU (but not ReLU), the following approximation is valid when network parameters are small:
@@ -17,7 +18,7 @@ $a^\* \approx (B^{\*T}B^\*)^{-1}B^{\*T}(Ba + b - b^\*)$
 $A^\*$ and $a^\*$ can be determined by using the randomly assigned values of $B^\*$ and $b^\*$, keeping the network in an approximately similar state as before the modification.
 
 ### Adding an inner layer to the network
-Again, the approximation relies on the activation function being asymptotically linear for small x and breaks down as the network parameters potentially grow large. Consider the network $\textrm{L1} \rightarrow \textrm{L2}$ having weights $A$ and biases $a$. To insert a layer between these with weights and biases $A^\*$, $a^\*$, $B^\*$, and $b^\*$:
+Again, the approximation relies on the activation function being asymptotically linear for small $x$ and breaks down as the network parameters potentially grow large. Consider the network $\textrm{L1} \rightarrow \textrm{L2}$ having weights $A$ and biases $a$. To insert a layer between these with weights and biases $A^\*$, $a^\*$, $B^\*$, and $b^\*$:
 
 $Ax + a = B^\*(f(A^\*x+a^\*)) + b^\*$
 
