@@ -11,7 +11,7 @@ The approximation is valid for asymptotically linear activation functions like g
 
 $B(f(Ax + a)) + b = A^\*x+a^\*$
 
-$\Rightarrow B(\frac{Ax + a}{2}) + b \approx A^\*x+a^\*$, for $\textrm{gelu}(x)~\frac{x}{2}$
+$\Rightarrow B(\frac{Ax + a}{2}) + b \approx A^\*x+a^\*\textrm{, for gelu}(x) \sim \frac{x}{2}$
 
 $A^\* \approx \frac{BA}{2}$
 
@@ -27,7 +27,7 @@ The network $\textrm{L1} \rightarrow \textrm{L2} \rightarrow \textrm{L3}$ consis
 
 $B(f(Ax + a)) + b = B^\*(f(A^\*x + a^\*)) + b^\*$
 
-$\Rightarrow B(\frac{Ax + a}{2}) + b \approx B^\*(\frac{A^\*x + a^\*}{2}) + b^\*$, for $\textrm{gelu}(x)~\frac{x}{2}$
+$\Rightarrow B(\frac{Ax + a}{2}) + b \approx B^\*(\frac{A^\*x + a^\*}{2}) + b^\*\textrm{, for gelu}(x) \sim \frac{x}{2}$
 
 $A^\* \approx (B^{\*T}B^\*)^{-1}B^{\*T}BA$
 
@@ -40,7 +40,7 @@ Again, the approximation relies on the activation function being asymptotically 
 
 $Ax + a = B^\*(f(A^\*x+a^\*)) + b^\*$
 
-$\Rightarrow Ax + a \approx B^\*(\frac{A^\*x + a^\*}{2}) + b^\*$, for $\textrm{gelu}(x)~\frac{x}{2}$
+$\Rightarrow Ax + a \approx B^\*(\frac{A^\*x + a^\*}{2}) + b^\*\textrm{, for gelu}(x) \sim \frac{x}{2}$
 
 $A^\* \approx 2(B^{\*T}B^\*)^{-1}B^{\*T}A$
 
