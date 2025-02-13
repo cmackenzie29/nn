@@ -4,6 +4,23 @@
 - [ ] Create class to iteratively build up model architecture. Should use pre-defined subset of training set to validate/compare each iteration.
 - [ ] Note: if linear approximation to gelu does not give good results, the next degree is $x^2/\sqrt{2\pi} + x/2$ to try.
 
+
+### Dropping an inner layer from the network
+The approximation is again valid for conditions described above. Consider the network $\textrm{L1} \rightarrow \textrm{L2} \rightarrow \textrm{L3}$ having weights $A$, $B$ and biases $a$, $b$. To condense the network with weights and biases $A^\*$ and $a^\*$:
+
+$B(f(Ax + a)) + b = A^\*x+a^\*$
+
+$\Rightarrow B(Ax + a) + b \approx A^\*x+a^\*$
+
+$A^\* \approx BA$
+
+$a^\* \approx Ba+b$
+
+
+## Failed attempts
+
+**Failed due to $B^{\*T}B^\*$ being singular for almost all randomly initialized matrices and therefore non-invertible**
+
 ### Modifying number of neurons in a layer
 The network $\textrm{L1} \rightarrow \textrm{L2} \rightarrow \textrm{L3}$ consists of weights $A$ and biases $a$ connecting $\textrm{L1}$ to $\textrm{L2}$, and weights $B$ and biases $b$ connecting $\textrm{L2}$ to $\textrm{L3}$. Changing the size of $\textrm{L2}$ requires these parameters to be redefined as $A^\*$, $a^\*$, $B^\*$, and $b^\*$. It is not possible to find an exact match for all inputs $x$, but when using an activation function that is asymptotically linear around small values of $x$, such as GELU (but not ReLU), the following approximation is valid when network parameters are small:
 
@@ -27,16 +44,5 @@ $\Rightarrow Ax + a \approx B^\*(A^\*x + a^\*) + b^\*$
 $A^\* \approx (B^{\*T}B^\*)^{-1}B^{\*T}A$
 
 $a^\* \approx (B^{\*T}B^\*)^{-1}B^{\*T}(a-b^\*)$
-
-### Dropping an inner layer from the network
-The approximation is again valid for conditions described above. Consider the network $\textrm{L1} \rightarrow \textrm{L2} \rightarrow \textrm{L3}$ having weights $A$, $B$ and biases $a$, $b$. To condense the network with weights and biases $A^\*$ and $a^\*$:
-
-$B(f(Ax + a)) + b = A^\*x+a^\*$
-
-$\Rightarrow B(Ax + a) + b \approx A^\*x+a^\*$
-
-$A^\* \approx BA$
-
-$a^\* \approx Ba+b$
 
 
