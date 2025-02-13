@@ -1,20 +1,21 @@
 ### To-Do:
-- [ ] Pass in predetermined weights to the network
+- [x] Pass in predetermined weights to the network
 - [x] Generalize Net class so that architecture can be passed in as parameters
 - [ ] Create class to iteratively build up model architecture. Should use pre-defined subset of training set to validate/compare each iteration.
-- [ ] Note: if linear approximation to gelu does not give good results, the next degree is $x^2/\sqrt{2\pi} + x/2$ to try.
+- [ ] if linear approximation to gelu does not give good results, the next degree is $x^2/\sqrt{2\pi} + x/2$ to try
+- [ ] Dropping a layer works very well starting from 1 inner layer but not for 2+. Probably a bug.
 
 
 ### Dropping an inner layer from the network
-The approximation is again valid for conditions described above. Consider the network $\textrm{L1} \rightarrow \textrm{L2} \rightarrow \textrm{L3}$ having weights $A$, $B$ and biases $a$, $b$. To condense the network with weights and biases $A^\*$ and $a^\*$:
+The approximation is valid for asymptotically linear activation functions like gelu. Consider the network $\textrm{L1} \rightarrow \textrm{L2} \rightarrow \textrm{L3}$ having weights $A$, $B$ and biases $a$, $b$. To condense the network with weights and biases $A^\*$ and $a^\*$:
 
 $B(f(Ax + a)) + b = A^\*x+a^\*$
 
-$\Rightarrow B(Ax + a) + b \approx A^\*x+a^\*$
+$\Rightarrow B(\frac{Ax + a}{2}) + b \approx A^\*x+a^\*$, for $\textrm{gelu}(x)~\frac{x}{2}$
 
-$A^\* \approx BA$
+$A^\* \approx \frac{BA}{2}$
 
-$a^\* \approx Ba+b$
+$a^\* \approx \frac{Ba}{2}+b$
 
 
 ## Failed attempts
@@ -26,11 +27,11 @@ The network $\textrm{L1} \rightarrow \textrm{L2} \rightarrow \textrm{L3}$ consis
 
 $B(f(Ax + a)) + b = B^\*(f(A^\*x + a^\*)) + b^\*$
 
-$\Rightarrow B(Ax + a) + b \approx B^\*(A^\*x + a^\*) + b^\*$
+$\Rightarrow B(\frac{Ax + a}{2}) + b \approx B^\*(\frac{A^\*x + a^\*}{2}) + b^\*$, for $\textrm{gelu}(x)~\frac{x}{2}$
 
 $A^\* \approx (B^{\*T}B^\*)^{-1}B^{\*T}BA$
 
-$a^\* \approx (B^{\*T}B^\*)^{-1}B^{\*T}(Ba + b - b^\*)$
+$a^\* \approx (B^{\*T}B^\*)^{-1}B^{\*T}(Ba + 2b - 2b^\*)$
 
 $A^\*$ and $a^\*$ can be determined by using the randomly assigned values of $B^\*$ and $b^\*$, keeping the network in an approximately similar state as before the modification.
 
@@ -39,10 +40,10 @@ Again, the approximation relies on the activation function being asymptotically 
 
 $Ax + a = B^\*(f(A^\*x+a^\*)) + b^\*$
 
-$\Rightarrow Ax + a \approx B^\*(A^\*x + a^\*) + b^\*$
+$\Rightarrow Ax + a \approx B^\*(\frac{A^\*x + a^\*}{2}) + b^\*$, for $\textrm{gelu}(x)~\frac{x}{2}$
 
-$A^\* \approx (B^{\*T}B^\*)^{-1}B^{\*T}A$
+$A^\* \approx 2(B^{\*T}B^\*)^{-1}B^{\*T}A$
 
-$a^\* \approx (B^{\*T}B^\*)^{-1}B^{\*T}(a-b^\*)$
+$a^\* \approx 2(B^{\*T}B^\*)^{-1}B^{\*T}(a-b^\*)$
 
 

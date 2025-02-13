@@ -80,9 +80,9 @@ class Net(torch.nn.Module):
         BTBinv = torch.inverse(new_net.layers[layer].weight.T @ new_net.layers[layer].weight)
         with torch.no_grad():
             # A* = (B*T B*)-1 B*T B A
-            # a* = (B*T B*)-1 B*T (Ba + b - b*)
+            # a* = (B*T B*)-1 B*T (Ba + 2b - 2b*)
             new_net.layers[layer-1].weight.data = BTBinv @ new_net.layers[layer].weight.T @ self.layers[layer].weight @ self.layers[layer-1].weight
-            new_net.layers[layer-1].bias.data = BTBinv @ new_net.layers[layer].weight.T @ (self.layers[layer].weight @ self.layers[layer-1].bias + self.layers[layer].bias - new_net.layers[layer].bias)
+            new_net.layers[layer-1].bias.data = BTBinv @ new_net.layers[layer].weight.T @ (self.layers[layer].weight @ self.layers[layer-1].bias + 2*self.layers[layer].bias - 2*new_net.layers[layer].bias)
 
         return new_net
 
@@ -111,8 +111,8 @@ class Net(torch.nn.Module):
         with torch.no_grad():
             # A* = (B*T B*)-1 B*T A
             # a* = (B*T B*)-1 B*T (a - b*)
-            new_net.layers[after_layer].weight.data = BTBinv @ new_net.layers[after_layer+1].weight.T @ self.layers[after_layer].weight
-            new_net.layers[after_layer].bias.data = BTBinv @ new_net.layers[after_layer+1].weight.T @ (self.layers[after_layer].bias - new_net.layers[after_layer+1].bias)
+            new_net.layers[after_layer].weight.data = 2*BTBinv @ new_net.layers[after_layer+1].weight.T @ self.layers[after_layer].weight
+            new_net.layers[after_layer].bias.data = 2*BTBinv @ new_net.layers[after_layer+1].weight.T @ (self.layers[after_layer].bias - new_net.layers[after_layer+1].bias)
 
         return new_net
 
@@ -135,8 +135,8 @@ class Net(torch.nn.Module):
         with torch.no_grad():
             # A* = B A
             # a* = B a + b
-            new_net.layers[layer-1].weight.data = self.layers[layer].weight @ self.layers[layer-1].weight
-            new_net.layers[layer-1].bias.data = self.layers[layer].weight @ self.layers[layer-1].bias + self.layers[layer].bias
+            new_net.layers[layer-1].weight.data = 0.5*self.layers[layer].weight @ self.layers[layer-1].weight
+            new_net.layers[layer-1].bias.data = 0.5*(self.layers[layer].weight @ self.layers[layer-1].bias) + self.layers[layer].bias
 
         return new_net
 
@@ -169,7 +169,7 @@ test_loader = torch.utils.data.DataLoader(dataset=test_data, batch_size=batch_si
 
 
 # Create network, optimizer, and loss function
-net = Net(inner_layers=[])
+net = Net(inner_layers=[120, 84])
 net.to(device)
 optimizer = torch.optim.SGD(net.parameters(), lr=0.01)
 criterion = torch.nn.MSELoss()
@@ -193,7 +193,8 @@ for _ in range(n_iters):
 end_time = time.time()
 print(f"Device: {device}, {n_parameters(net)} model parameters, {n_iters} iterations with batch size {batch_size}, accuracy {accuracy(net, test_loader)}% on out-of-sample data, train time {round(end_time-start_time)} seconds")
 
-
+new_net = net.drop_layer(1,device)
+print(f"Accuracy of model with dropped layer: {accuracy(new_net,test_loader)}%")
 
 
 
