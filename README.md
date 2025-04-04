@@ -4,6 +4,14 @@
 - [ ] Create class to iteratively build up model architecture. Should use pre-defined subset of training set to validate/compare each iteration.
 - [ ] if linear approximation to gelu does not give good results, the next degree is $x^2/\sqrt{2\pi} + x/2$ to try
 - [ ] Dropping a layer works very well starting from 1 inner layer but not for 2+. Probably a bug.
+- [ ] What about using a diagonally dominant random matrix?
+
+### Adding neurons to the network
+Define some evolution rate, $r_{ev}$. Populate the additional values for the weights and biases with the randomly selected values in PyTorch (Kaiming Uniform) times $r_{ev}$. Smaller values of $r_{ev}$ are more likely to produce a configuration similar to the parent network.
+
+
+### Removing neurons from the network
+TBD
 
 
 ### Dropping an inner layer from the network
@@ -18,9 +26,14 @@ $A^\* \approx \frac{BA}{2}$
 $a^\* \approx \frac{Ba}{2}+b$
 
 
+
+### Adding a layer to the network
+
+
+
 ## Failed attempts
 
-**Failed due to $B^{\*T}B^\*$ being singular for almost all randomly initialized matrices and therefore non-invertible**
+**Failed due to $B^{\*T}B^\*$ being ~singular for almost all randomly initialized matrices and therefore non-invertible**
 
 ### Modifying number of neurons in a layer
 The network $\textrm{L1} \rightarrow \textrm{L2} \rightarrow \textrm{L3}$ consists of weights $A$ and biases $a$ connecting $\textrm{L1}$ to $\textrm{L2}$, and weights $B$ and biases $b$ connecting $\textrm{L2}$ to $\textrm{L3}$. Changing the size of $\textrm{L2}$ requires these parameters to be redefined as $A^\*$, $a^\*$, $B^\*$, and $b^\*$. It is not possible to find an exact match for all inputs $x$, but when using an activation function that is asymptotically linear around small values of $x$, such as GELU (but not ReLU), the following approximation is valid when network parameters are small:
