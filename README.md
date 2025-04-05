@@ -1,20 +1,22 @@
-### To-Do:
+## In-progress:
+- Try creating a well-conditioned random matrix by substituting singular values (see `invertible-random.py`)
+- If linear approximation to gelu does not give good results, the next degree is $x^2/\sqrt{2\pi} + x/2$ to try
+- Dropping a layer works very well starting from 1 inner layer but not for 2+. Probably a bug.
+- Create class to iteratively build up model architecture. Should use pre-defined subset of training set to validate/compare each iteration.
+
+## Complete:
 - [x] Pass in predetermined weights to the network
 - [x] Generalize Net class so that architecture can be passed in as parameters
-- [ ] Create class to iteratively build up model architecture. Should use pre-defined subset of training set to validate/compare each iteration.
-- [ ] if linear approximation to gelu does not give good results, the next degree is $x^2/\sqrt{2\pi} + x/2$ to try
-- [ ] Dropping a layer works very well starting from 1 inner layer but not for 2+. Probably a bug.
-- [ ] What about using a diagonally dominant random matrix?
 
-### Adding neurons to the network
+## Adding neurons to the network
 Define some evolution rate, $r_{ev}$. Populate the additional values for the weights and biases with the randomly selected values in PyTorch (Kaiming Uniform) times $r_{ev}$. Smaller values of $r_{ev}$ are more likely to produce a configuration similar to the parent network.
 
 
-### Removing neurons from the network
+## Removing neurons from the network
 TBD
 
 
-### Dropping an inner layer from the network
+## Dropping an inner layer from the network
 The approximation is valid for asymptotically linear activation functions like gelu. Consider the network $\textrm{L1} \rightarrow \textrm{L2} \rightarrow \textrm{L3}$ having weights $A$, $B$ and biases $a$, $b$. To condense the network with weights and biases $A^\*$ and $a^\*$:
 
 $B(f(Ax + a)) + b = A^\*x+a^\*$
@@ -27,9 +29,17 @@ $a^\* \approx \frac{Ba}{2}+b$
 
 
 
-### Adding a layer to the network
+## Adding a layer to the network
+TBD
 
 
+## Additional results
+### Generating a random matrix with a particular determinant value
+- Get SVD of a random $m \times n$ matrix $A$
+- Replace the singular values with the logspace ranging from 1 to the desired condition number
+- To figure out the appropriate condition number for a particular determinant:
+    - $\det(A) = \prod \sigma = 1 * a * a^2 * ... * a^{N-1} = a^{N(N-1)/2}$, where $a$ is the ratio between values in the logspace and $a^{N-1}$ is the condition number
+    - Then it is not hard to show that $a^{N-1}=\det(A)^{2/N}$
 
 ## Failed attempts
 
